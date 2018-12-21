@@ -269,13 +269,19 @@ class PeerService:
                 return True
         return False
 
-    def __init_kms_helper(self, agent_pin):
-        if self.__get_use_kms():
+    def __init_key_loading_helper(self, agent_pin):
+        if conf.HSM_ENABLE_USE:
+            from loopchain.tools.hsm_helper import HsmHelper
+            HsmHelper().set_agent_pin(agent_pin)
+        elif self.__get_use_kms():
             from loopchain.tools.kms_helper import KmsHelper
             KmsHelper().set_agent_pin(agent_pin)
 
-    def __close_kms_helper(self):
-        if self.__get_use_kms():
+    def __close_key_loading_helper(self):
+        if conf.HSM_ENABLE_USE:
+            from loopchain.tools.hsm_helper import HsmHelper
+            HsmHelper().remove_agent_pin()
+        elif self.__get_use_kms():
             from loopchain.tools.kms_helper import KmsHelper
             KmsHelper().remove_agent_pin()
 
@@ -308,7 +314,7 @@ class PeerService:
 
         stopwatch_start = timeit.default_timer()
 
-        self.__init_kms_helper(agent_pin)
+        self.__init_key_loading_helper(agent_pin)
         self.__init_port(port)
         self.__init_level_db()
 
@@ -329,7 +335,7 @@ class PeerService:
         self.__run_rest_services(port)
         self.run_common_service()
 
-        self.__close_kms_helper()
+        self.__close_key_loading_helper()
 
         stopwatch_duration = timeit.default_timer() - stopwatch_start
         logging.info(f"Start Peer Service at port: {port} start duration({stopwatch_duration})")

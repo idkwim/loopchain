@@ -28,6 +28,8 @@ class KmsHelper(metaclass=SingletonMetaClass):
         else:
             self.__agent_pin = agent_pin
 
+        logging.debug(f"LC-92 :: set agent pin on KMS({self.__agent_pin})")
+
     def remove_agent_pin(self):
         """remove agent_pin for security
         """

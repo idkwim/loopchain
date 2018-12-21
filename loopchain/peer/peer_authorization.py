@@ -70,6 +70,8 @@ class PeerAuthorization(PublicVerifier):
                 # load private key
                 self.__load_private(pri_path=conf.CHANNEL_OPTION[self._channel][self.PRIVATE_PATH],
                                     pri_pass=conf.CHANNEL_OPTION[self._channel][self.PRIVATE_PASSWORD])
+            elif self._channel_option[self.KEY_LOAD_TYPE] == conf.KeyLoadType.HSM_LOAD:
+                from loopchain.tools.hsm_helper import HsmHelper
 
             elif self._channel_option[self.KEY_LOAD_TYPE] == conf.KeyLoadType.KMS_LOAD:
                 from loopchain.tools.kms_helper import KmsHelper

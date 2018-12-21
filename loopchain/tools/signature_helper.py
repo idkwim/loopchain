@@ -36,7 +36,7 @@ class PublicVerifier:
     CONSENSUS_CERT_USE = "consensus_cert_use"
     TX_CERT_USE = "tx_cert_use"
     PUBLIC_PATH = "public_path"
-    PRIVATE_PATH  = "private_path"
+    PRIVATE_PATH = "private_path"
     PRIVATE_PASSWORD = "private_password"
     KEY_LOAD_TYPE = "key_load_type"
     KEY_ID = "key_id"

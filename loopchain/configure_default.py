@@ -91,6 +91,7 @@ class KeyLoadType(IntEnum):
     FILE_LOAD = 0
     KMS_LOAD = 1
     RANDOM_TABLE_DERIVATION = 2
+    HSM_LOAD = 3
 
 
 IP_LOCAL = '127.0.0.1'
@@ -396,12 +397,28 @@ CHANNEL_OPTION = {
     }
 }
 
-# KMS
+
+#########
+# KMS ###
+#########
 KMS_AGENT_PASSWORD = ""
 KMS_SIGNATURE_KEY_ID = ""
 KMS_SIGNATURE_KEY_ID_LIST = {}
 KMS_TLS_KEY_ID = ""
 KMS_SECRET_KEY_LABEL = "KEY_ENCRYPTION"
+
+
+#########
+# HSM ###
+#########
+# HSM_ENABLE_USE has higher priority than use configuration of KMS.
+HSM_ENABLE_USE = False
+HSM_LIB_PATH = "/opt/cloudhsm/lib/libcloudhsm_pkcs11.so"
+HSM_USER_NAME = "loopchainHSM"
+HSM_USER_PASSWORD = "loopchainHSM12!"
+HSM_TOKEN_LABEL = "cavium"
+HSM_SECRET_KEY_LABEL = "aes256"
+
 
 
 ####################

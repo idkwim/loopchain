@@ -55,7 +55,8 @@ class GRPCSecureKeyCollection:
 
         if key_load_type == conf.KeyLoadType.FILE_LOAD:
             self.__reset_by_file(force)
-
+        elif key_load_type == conf.KeyLoadType.HSM_LOAD:
+            self.__reset_by_hsm(key_load_type, force)
         elif key_load_type == conf.KeyLoadType.KMS_LOAD:
             self.__reset_by_kms(key_load_type, force)
 
@@ -69,10 +70,23 @@ class GRPCSecureKeyCollection:
         self.__ssl_crt.reset_by_path(conf.GRPC_SSL_DEFAULT_CERT_PATH, force)
         self.__ssl_root_crt.reset_by_path(conf.GRPC_SSL_DEFAULT_TRUST_CERT_PATH, force)
 
-    def __reset_by_kms(self, key_load_type: conf.KeyLoadType, force=False):
-        from loopchain.tools.kms_helper import KmsHelper
+    def __reset_by_hsm(self, key_load_type: conf.KeyLoadType, force=False):
         if not force and self.__curr_key_load_type == key_load_type:
             return
+
+        # from loopchain.tools.hsm_helper import HsmHelper
+        #
+        # cert_data, key_data = HsmHelper().get_tls_cert_pair()
+        #
+        # self.__ssl_pk.reset_by_data(key_data)
+        # self.__ssl_crt.reset_by_data(cert_data)
+        # self.__ssl_root_crt.reset_by_path(conf.GRPC_SSL_DEFAULT_TRUST_CERT_PATH, force)
+
+    def __reset_by_kms(self, key_load_type: conf.KeyLoadType, force=False):
+        if not force and self.__curr_key_load_type == key_load_type:
+            return
+
+        from loopchain.tools.kms_helper import KmsHelper
 
         cert_data, key_data = KmsHelper().get_tls_cert_pair()
 
