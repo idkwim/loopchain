@@ -152,6 +152,10 @@ class ChannelService:
             self.cleanup()
 
     def close(self):
+        if self.__inner_service:
+            self.__inner_service.cleanup()
+            logging.info("Cleanup ChannelInnerService.")
+
         MessageQueueService.loop.stop()
 
     def cleanup(self):
@@ -204,6 +208,7 @@ class ChannelService:
 
         await self.__init_score_container()
         await self.__inner_service.connect(conf.AMQP_CONNECTION_ATTEMPS, conf.AMQP_RETRY_DELAY, exclusive=True)
+        self.__inner_service.init_sub_services()
 
         self.__peer_manager = PeerManager(ChannelProperty().name)
 
