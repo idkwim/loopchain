@@ -25,7 +25,7 @@ from earlgrey import *
 
 from loopchain import configure as conf
 from loopchain import utils as util
-from loopchain.baseservice import BroadcastCommand, BroadcastScheduler, ScoreResponse
+from loopchain.baseservice import BroadcastCommand, BroadcastScheduler, BroadcastSchedulerFactory, ScoreResponse
 from loopchain.blockchain import (Transaction, TransactionSerializer, TransactionVerifier, TransactionVersioner,
                                   Block, BlockBuilder, BlockSerializer, blocks, Hash32, )
 from loopchain.blockchain.exception import *
@@ -39,19 +39,18 @@ if TYPE_CHECKING:
     from loopchain.channel.channel_service import ChannelService
 
 
-
 class ChannelTxCreatorInnerTask:
     def __init__(self, channel_name: str, peer_target: str, tx_versioner: TransactionVersioner):
         self.__channel_name = channel_name
         self.__tx_versioner = tx_versioner
 
-        scheduler = BroadcastScheduler(channel=channel_name, self_target=peer_target)
+        scheduler = BroadcastSchedulerFactory.new(channel=channel_name, self_target=peer_target)
         scheduler.start()
 
         self.__broadcast_scheduler = scheduler
 
-        future = scheduler.schedule_job(BroadcastCommand.SUBSCRIBE, peer_target)
-        future.result(conf.TIMEOUT_FOR_FUTURE)
+        scheduler.schedule_job(BroadcastCommand.SUBSCRIBE, peer_target,
+                               block=True, block_timeout=conf.TIMEOUT_FOR_FUTURE)
 
     def __pre_validate(self, tx: Transaction):
         if conf.CHANNEL_OPTION[self.__channel_name]['send_tx_type'] != conf.SendTxType.icx:

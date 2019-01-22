@@ -13,7 +13,7 @@
 # limitations under the License.
 """ A class for Manage Channels """
 
-from loopchain.baseservice import BroadcastScheduler, BroadcastCommand, PeerManager
+from loopchain.baseservice import BroadcastSchedulerFactory, BroadcastCommand, PeerManager
 from loopchain.container import CommonService
 from loopchain.consensus import *
 
@@ -47,7 +47,7 @@ class ChannelManager:
         self.__peer_managers[channel] = peer_manager
 
     def __start_broadcast_scheduler(self, channel):
-        scheduler = BroadcastScheduler(channel=channel)
+        scheduler = BroadcastSchedulerFactory.new(channel=channel)
         scheduler.start()
 
         self.__broadcast_schedulers[channel] = scheduler
