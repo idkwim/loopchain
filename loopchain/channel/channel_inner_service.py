@@ -28,7 +28,6 @@ from loopchain.blockchain import (Transaction, TransactionSerializer, Transactio
                                   BlockSerializer, blocks, Hash32)
 from loopchain.blockchain.exception import *
 from loopchain.channel.channel_property import ChannelProperty
-from loopchain.consensus import Epoch, VoteMessage
 from loopchain.peer.consensus_siever import ConsensusSiever
 from loopchain.protos import loopchain_pb2, message_code
 
@@ -365,15 +364,6 @@ class ChannelInnerTask:
         return response_code
 
     @message_queue_task
-    def announce_new_block_for_vote(self, block: Block, epoch: Epoch):
-        acceptor = self._channel_service.acceptor
-        if acceptor.epoch is None:
-            pass
-        else:
-            acceptor.epoch.block_hash = block.header.hash.hex()
-            acceptor.create_vote(block=block, epoch=epoch)
-
-    @message_queue_task
     def block_sync(self, block_hash, block_height):
         blockchain = self._channel_service.block_manager.get_blockchain()
 
@@ -449,14 +439,6 @@ class ChannelInnerTask:
         consensus = block_manager.consensus_algorithm
         if isinstance(consensus, ConsensusSiever) and self._channel_service.state_machine.state == "BlockGenerate":
             consensus.count_votes(block_hash)
-
-    @message_queue_task
-    async def broadcast_vote(self, vote: VoteMessage):
-        acceptor = self._channel_service.acceptor
-        if acceptor.epoch is None:
-            pass
-        else:
-            await acceptor.apply_vote_into_block(vote)
 
     @message_queue_task
     def get_invoke_result(self, tx_hash):
